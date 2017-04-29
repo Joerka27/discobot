@@ -64,7 +64,6 @@ class SimpleBattleBot:
 
     def arena_object_callback(self, state_list):
         assert isinstance(state_list, ArenaObjectStateList)
-
         # look for weapon tokens first
         rocket_tokens = [a for a in state_list.states if a.type ==
                 ArenaObjectState.TOKEN_ROCKET]
