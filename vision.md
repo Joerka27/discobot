@@ -38,7 +38,7 @@ now `roslaunch usb_cam usb_cam-test.launch` should work
 * change parameters if needed...
 
 ```
-rosrun camera_calibration cameracalibrator.py --size 7x7 --square 0.0095 image:=/usb_cam/image_raw camera:=/usb_cam --pattern circles
+rosrun camera_calibration cameracalibrator.py --size 7x7 --square 0.01875 image:=/usb_cam/image_raw camera:=/usb_cam --pattern circles
 ```
 
 * ...calibration GUI opens...
