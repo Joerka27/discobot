@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+  <group ns="team_black">
+    <node name="robot_connection" type="serial_node.py" pkg="rosserial_python" output="screen" args="/dev/ttyACM0"/>
+    <node name="discobot" type="simple_battle_bot.py" pkg="discobot" output="screen"/>
+  </group>
+</launch>
