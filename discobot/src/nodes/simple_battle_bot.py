@@ -85,7 +85,7 @@ class SimpleBattleBot:
 
             # print "diff", diff_angle/pi*180.0
             diff_angle = diff_angle/pi*180
-            diff_angle -= 90
+            #diff_angle -= 90
 
             print "diff", diff_angle
 
@@ -111,6 +111,6 @@ class SimpleBattleBot:
 
 
 if __name__ == "__main__":
-    rospy.init_node("SimpleBattleBot")
-    sbb = SimpleBattleBot("/team_red", 10)
+    rospy.init_node("SimpleBattleBot", anonymous=True)
+    sbb = SimpleBattleBot("/team_black", 5)
     rospy.spin()
