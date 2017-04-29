@@ -51,6 +51,12 @@ now `roslaunch usb_cam usb_cam-test.launch` should work
 * launch camera node before
 * change parameters if needed...
 
+Raspi:
+```
+rosrun camera_calibration cameracalibrator.py --size 7x7 --square 0.01875 image:=/raspicam_node/image/compressed camera:=/raspicam_node --pattern circles
+```
+
+webcam:
 ```
 rosrun camera_calibration cameracalibrator.py --size 7x7 --square 0.01875 image:=/usb_cam/image_raw camera:=/usb_cam --pattern circles
 ```
