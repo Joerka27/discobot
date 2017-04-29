@@ -4,7 +4,6 @@ import rospy
 from battle_arena_msgs.msg import MoveCommand
 from sys import argv
 # import curses, time
-import cv2
 
 
 
@@ -27,9 +26,9 @@ class _GetchUnix:
 if __name__ == "__main__":
     rospy.init_node("ASD")
 
-    pub = rospy.Publisher("/team_red/cmd", MoveCommand, queue_size=1)
+    pub = rospy.Publisher("/team_black/cmd", MoveCommand, queue_size=1)
     while not pub.get_num_connections() and not rospy.is_shutdown():
-        print "Waiting, call 'rostopic echo /team_red/cmd'"
+        print "Waiting, call 'rostopic echo /team_black/cmd'"
         rospy.sleep(1)
 
     asd = _GetchUnix()
