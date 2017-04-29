@@ -27,7 +27,7 @@ https://github.com/UbiquityRobotics/raspicam_node
 
 Launch the node:
 ```
-roslaunch raspicam_node camerav2_1280x960.launch
+roslaunch raspicam_node camerav1_1280x720.launch
 ```
 
 ---
