@@ -3,7 +3,7 @@
 import rospy
 from battle_arena_msgs.msg import MoveCommand, PlayerState, Pose, ArenaObjectStateList, ArenaObjectState
 from thread import start_new_thread
-from math import atan2, pi
+from math import atan2, pi, radians, sin, cos
 
 class SimpleBattleBot:
 
@@ -51,8 +51,6 @@ class SimpleBattleBot:
 
     def arena_object_callback(self, state_list):
         assert isinstance(state_list, ArenaObjectStateList)
-        if self.goal_acquired:
-            return
         for o in state_list.states:
             assert isinstance(o, ArenaObjectState)
             if o.type == ArenaObjectState.TOKEN_COLLECTIBLE_TREASURE:
@@ -85,23 +83,26 @@ class SimpleBattleBot:
 
             # print "diff", diff_angle/pi*180.0
             diff_angle = diff_angle/pi*180
-            #diff_angle -= 90
+            diff_angle -= 90
+            diff_angle += 180
+	    diff_angle %= 360
 
             print "diff", diff_angle
 
             ahead = False
-            v = -100  # robot motors are reversed
-            if abs(diff_angle) < 15:
-                rospy.loginfo("Ahead")
-                cmd = MoveCommand(left_speed=-v, right_speed=-v)
-                ahead = True
+            vmax = 150  # robot motors are reversed
+	    vturn = 80
+	    if 0 <= diff_angle <= 90:
+		cmd = MoveCommand(right_speed=vmax, left_speed=cos(radians(diff_angle))*vmax)
+	    elif 270 <= diff_angle < 360:
+		cmd = MoveCommand(right_speed=cos(radians(diff_angle))*vmax, left_speed=vmax)
             else:
-                if 0 < diff_angle:
+                if 180 > diff_angle:
                     rospy.loginfo("left")
-                    cmd = MoveCommand(left_speed=v, right_speed=-v)
+                    cmd = MoveCommand(left_speed=-vturn, right_speed=vturn)
                 else:
                     rospy.loginfo("right")
-                    cmd = MoveCommand(left_speed=-v, right_speed=v)
+                    cmd = MoveCommand(left_speed=vturn, right_speed=-vturn)
 
             self.pub_cmd.publish(cmd)
             if ahead:
