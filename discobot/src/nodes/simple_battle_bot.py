@@ -4,7 +4,7 @@ import rospy
 from battle_arena_msgs.msg import MoveCommand, PlayerState, Pose, ArenaObjectStateList, ArenaObjectState
 from battle_arena_msgs.srv import PlayerCommand
 from std_msgs.msg import Int32
-from geometry_msgs.msg import TFMessage
+from tf2_msgs.msg import TFMessage
 from thread import start_new_thread
 from math import atan2, pi, radians, sin, cos
 
