@@ -27,9 +27,10 @@ class _GetchUnix:
 if __name__ == "__main__":
     rospy.init_node("ASD")
 
-    pub = rospy.Publisher("/cmd", MoveCommand, queue_size=1)
+    pub = rospy.Publisher("/team_red/cmd", MoveCommand, queue_size=1)
     while not pub.get_num_connections() and not rospy.is_shutdown():
-        rospy.sleep(0.02)
+        print "Waiting, call 'rostopic echo /team_red/cmd'"
+        rospy.sleep(1)
 
     asd = _GetchUnix()
 
@@ -46,22 +47,23 @@ if __name__ == "__main__":
             stop = k == 'q'
             # quit()
 
+        k = k.upper()
         # print k, len(k)
         if k == 'A':
+            r += step
+            l -= step
+        if k == 'D':
+            r -= step
+            l += step
+
+        if k == 'W':
             l += step
             r += step
-        if k == 'B':
-            l -= step
-            r -= step
-
-        if k == 'C':
-            l += step
-            r -= step
             # print "right"
 
-        if k == 'D':
+        if k == 'S':
+            r -= step
             l -= step
-            r += step
             # print "left"
 
         if k == '0':
