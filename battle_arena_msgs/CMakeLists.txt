@@ -6,7 +6,7 @@ project(battle_arena_msgs)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   actionlib
-  cv_bridge
+#  cv_bridge
   geometry_msgs
   std_msgs
   std_srvs
