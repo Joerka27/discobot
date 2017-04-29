@@ -136,9 +136,14 @@ class SimpleBattleBot:
                     for weapon in self.ammos:
                         if self.ammos[weapon]:
                             try:
-                                self.weapon_client(TEAM_ID, getattr(ArenaObjectState,
-                                    "TOKEN_{}".format(weapon.upper())))
-                                break
+				weapon_token = getattr(ArenaObjectState, weapon.upper())
+				rospy.loginfo("weapon id " + str(weapon_token))
+                                response = self.weapon_client(TEAM_ID, weapon_token)
+				if not response.success:
+				    rospy.logerr(weapon + " service failed")
+				    rospy.logerr(response.message)
+				else:
+				    break
                             except Exception as e:
                                 print(e)
                                 continue
