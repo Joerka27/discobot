@@ -1,7 +1,7 @@
 #! /usr/bin/python
 
 import rospy
-from battle_arena_msgs.msg import PlayerCommand, MoveCommand, PlayerState, Pose, ArenaObjectStateList, ArenaObjectState
+from battle_arena_msgs.msg import MoveCommand, PlayerState, Pose, ArenaObjectStateList, ArenaObjectState
 from thread import start_new_thread
 from math import atan2, pi
 
