@@ -2,6 +2,7 @@
 
 import rospy
 from battle_arena_msgs.msg import MoveCommand, PlayerState, Pose, ArenaObjectStateList, ArenaObjectState
+from std_msgs.msg import Int32
 from thread import start_new_thread
 from math import atan2, pi, radians, sin, cos
 
@@ -13,10 +14,12 @@ class SimpleBattleBot:
 
         self.current_pose = Pose()
         self.goal_acquired = False
+        self.goal_token_type = None
         self.target_pose = Pose()
         self.target_angle = 0
 
         self.pub_cmd = rospy.Publisher(self.robot_name+"/cmd", MoveCommand, queue_size=1)
+        # self.pub_blink = rospy.Publisher(self.robot_name + "/blink", Int32, queue_size=1)
 
         self.sub_player_state = rospy.Subscriber(self.robot_name+"/state",
                                                  PlayerState, self.state_update_cb)
@@ -27,6 +30,7 @@ class SimpleBattleBot:
         # self.cmd_client = rospy.ServiceProxy('add_two_ints', PlayerCommand)
 
         SimpleBattleBot.wait_for(self.pub_cmd)
+        # SimpleBattleBot.wait_for(self.pub_blink)
         SimpleBattleBot.wait_for(self.sub_player_state)
         SimpleBattleBot.wait_for(self.sub_tokens) #  information on all tokens in the arena
 
@@ -56,6 +60,7 @@ class SimpleBattleBot:
             if o.type == ArenaObjectState.TOKEN_COLLECTIBLE_TREASURE:
                 rospy.loginfo("Found new treasure to collect")
                 self.goal_acquired = True
+                # self.goal_token_type = o.type
                 self.target_pose = o.pose
 
     def get_angle_towards_goal(self):
@@ -105,6 +110,11 @@ class SimpleBattleBot:
                     cmd = MoveCommand(left_speed=vturn, right_speed=-vturn)
 
             self.pub_cmd.publish(cmd)
+
+            if self.goal_token_type is not None:
+                self.pub_blink.publish(self.goal_token_type)
+
+
             if ahead:
                 rospy.sleep(1)
         print "Stopping"
