@@ -12,8 +12,10 @@ sudo apt install ros-kinetic-ar-track-alvar
 
 ### Raspberry Cam
 
-try this?
+First, enable hardware support for the camera as described here:
+https://www.raspberrypi.org/documentation/configuration/camera.md
 
+Clone and build the ROS node as described here:
 https://github.com/UbiquityRobotics/raspicam_node
 
 ---
@@ -38,7 +40,7 @@ now `roslaunch usb_cam usb_cam-test.launch` should work
 * change parameters if needed...
 
 ```
-rosrun camera_calibration cameracalibrator.py --size 7x7 --square 0.0095 image:=/usb_cam/image_raw camera:=/usb_cam --pattern circles
+rosrun camera_calibration cameracalibrator.py --size 7x7 --square 0.01875 image:=/usb_cam/image_raw camera:=/usb_cam --pattern circles
 ```
 
 * ...calibration GUI opens...
