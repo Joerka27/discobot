@@ -1,0 +1,7 @@
+int32 player_id
+int8 weapon # e.g. ArenaObjectState::TOKEN_ROCKET 
+
+---
+
+string message
+bool success
