@@ -4,6 +4,7 @@ import rospy
 from battle_arena_msgs.msg import MoveCommand, PlayerState, Pose, ArenaObjectStateList, ArenaObjectState
 from battle_arena_msgs.srv import PlayerCommand
 from std_msgs.msg import Int32
+from geometry_msgs.msg import TFMessage
 from thread import start_new_thread
 from math import atan2, pi, radians, sin, cos
 
@@ -20,6 +21,7 @@ class SimpleBattleBot:
         self.goal_token_type = None
         self.target_pose = Pose()
         self.target_angle = 0
+        self.tf_angle = None
         self.ammos = {}
 
         self.pub_cmd = rospy.Publisher(self.robot_name+"/cmd", MoveCommand, queue_size=1)
@@ -85,6 +87,14 @@ class SimpleBattleBot:
                 self.target_pose = opponent.pose
                 return
 
+        try:
+            transforms = rospy.wait_for_message("/ar_pose_marker", TFMessage, timeout=0.1)
+            translation = transforms[0].transform.translation
+            self.tf_angle = atan2(translation.x, translation.z)
+        except rospy.ROSException:
+            # timeout
+            pass
+
         # otherwise hunt dem treasures
         treasure_tokens = [a for a in state_list.states if a.type ==
                 ArenaObjectState.TOKEN_COLLECTIBLE_TREASURE]
@@ -149,6 +159,12 @@ class SimpleBattleBot:
                 else:
                     cmd = MoveCommand(left_speed=vturn, right_speed=-vturn)
             else:
+                if self.tf_angle is not None:
+                    # update if TF angle available
+                    diff_angle = self.tf_angle
+                    # reset if marker not detected in next step
+                    self.tf_angle = None
+
                 if 0 <= diff_angle <= 90:
                     cmd = MoveCommand(right_speed=vmax, left_speed=cos(radians(diff_angle))*vmax)
                 elif 270 <= diff_angle < 360:
