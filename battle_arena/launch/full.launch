@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<launch>
+  <include file="$(find battle_arena)/launch/ensenso.launch" />
+  <!--include file="$(find battle_arena)/launch/pylon_camera_node.launch" /-->
+
+  <!--include file="$(find battle_arena)/launch/marker_detection.launch" /-->    
+  <include file="$(find battle_arena)/launch/positions.launch" />    
+
+  <node name="tf2_buffer_server" pkg="tf2_ros" type="buffer_server" output="screen" respawn="true" />
+
+</launch>

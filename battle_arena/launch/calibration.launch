@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+ <node name="projector_calibration"  pkg="projector_calibration" type="projector_calibration_node" output="screen">
+    <param name="projector_width" value="1824" />
+    <param name="projector_height"  value="984" />
+
+    <param name="cloud_topic"  value="/ensenso_camera/depth/points" />
+
+    <param name="area_cam_node"  value="/ensenso_camera/left_intensity/" />
+    <param name="image_rect_name"  value="image_rect" />
+ </node>
+ </launch>
+

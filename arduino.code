@@ -1,0 +1,126 @@
+#include <ros.h>
+
+#include <DRV8835MotorShield.h>
+#include <Encoder.h>
+
+#include <std_msgs/String.h>
+#include <std_msgs/Empty.h>
+#include <std_msgs/Int32.h>
+
+#include <battle_arena_msgs/MoveCommand.h>
+#include <battle_arena_msgs/Tone.h>
+
+DRV8835MotorShield motors;
+ros::NodeHandle  nh;
+
+/// publisher for left encoder
+std_msgs::Int32 left_encoder_msg;
+ros::Publisher encoder_publisher("left_encoder", &left_encoder_msg);
+
+/// publisher for status message 
+std_msgs::String string_msg;
+ros::Publisher string_publisher("status", &string_msg);
+
+int tone_pin = 5;
+int power_pin_encoder = 12;
+Encoder encLeft(2, 3);
+
+unsigned long last_master_command_time = 0; /// time of last command on master-topic
+int master_command_timeout = 500; /// duration of master override after last message
+
+void masterCommandCb(const battle_arena_msgs::MoveCommand& cmd_msg)
+{
+  send_status("got master");
+  last_master_command_time = millis();
+  motors.setSpeeds(cmd_msg.left_speed, cmd_msg.right_speed);
+}
+
+bool masterOverrideActive()
+{
+  if (last_master_command_time > 0) /// check so that we don't the millis-call every time
+  {
+    if (millis() < last_master_command_time + master_command_timeout)
+    {
+      return true;
+    }else{
+      send_status("Master override ended");
+      /// turn of motors?
+      last_master_command_time = 0;
+    }
+  }
+  return false;
+}
+
+/// small helper to send a status message
+void send_status(char* msg)
+{
+  string_msg.data = msg;
+  string_publisher.publish(&string_msg);
+}
+
+/// command from user (normal operation)
+void commandCb(const battle_arena_msgs::MoveCommand& cmd_msg)
+{
+  if (masterOverrideActive())
+  {
+    /// command gets ignored if the robot is controlled by master
+    send_status("User command while being in override");
+    return;
+  }
+  motors.setSpeeds(cmd_msg.left_speed, cmd_msg.right_speed);
+}
+
+/// callback for making the robot beep
+void tone_messageCb( const battle_arena_msgs::Tone& tone_msg){
+  tone(tone_pin, tone_msg.frequency, tone_msg.duration_ms);
+}
+
+/// simpler way to stop robot
+void stop_messageCb( const std_msgs::Empty& msg){
+  motors.setSpeeds(0, 0);
+}
+
+ros::Subscriber<battle_arena_msgs::MoveCommand> sub_cmd("cmd", commandCb );
+ros::Subscriber<battle_arena_msgs::MoveCommand> sub_cmd_master("master_cmd", masterCommandCb );
+ros::Subscriber<std_msgs::Empty> sub_stop("stop", stop_messageCb );
+ros::Subscriber<battle_arena_msgs::Tone> sub_tone("tone", tone_messageCb );
+
+
+void setup()
+{
+  /// current for encoder
+  pinMode(power_pin_encoder, OUTPUT);
+  digitalWrite(power_pin_encoder, HIGH); 
+  
+  pinMode(13, OUTPUT); /// board led 
+
+  nh.initNode();
+  
+  nh.advertise(encoder_publisher);
+  nh.advertise(string_publisher);
+
+  nh.subscribe(sub_cmd);
+  nh.subscribe(sub_cmd_master);
+  nh.subscribe(sub_stop);
+  nh.subscribe(sub_tone);
+
+  // motors.flipM1(true); /// use this if a motor is mounted rotated or if cables are switched
+}
+
+int loop_counter=0;
+
+void loop()
+{
+  /// publish encoder values at 20Hz
+  if (loop_counter++%5 == 0)
+  {
+    left_encoder_msg.data = encLeft.read();
+    encoder_publisher.publish(&left_encoder_msg);
+    if (masterOverrideActive())
+    {
+      send_status("Master override active");
+    }
+  }
+  nh.spinOnce();
+  delay(10);
+}

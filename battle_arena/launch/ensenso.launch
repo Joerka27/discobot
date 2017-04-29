@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+ <node name="ensenso_camera"  pkg="ensenso_camera" type="ensenso_camera">
+    <param name="near_distance" value="1.3" />
+    <param name="far_distance"  value="2.0" />
+ </node>
+ </launch>
+

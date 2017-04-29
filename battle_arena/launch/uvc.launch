@@ -1,0 +1,14 @@
+<launch> 
+    <node name="cam" pkg="uvc_camera" type="uvc_camera_node" output="screen">
+      <param name="device" type="string" value="/dev/video0"/>
+      <param name="camera_info_url" value="file:///home/nikolas/Documents/battle_1_15-04-2017-13-46/asd_intrinsic_calib.yaml" />
+      <param name="width" type="int" value="1920"/>
+      <param name="height" type="int" value="1080"/>
+      <param name="fps" type="int" value="30"/>
+      <param name="format" value="jpeg"/>
+      <param name="auto_focus" value="false"/>
+      <param name="focus_absolute" value="0"/>
+      <param name="brightness" value="40"/>
+      <param name="frame" value="pylon"/>
+    </node>
+</launch>
