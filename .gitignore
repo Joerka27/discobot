@@ -2,3 +2,5 @@ cmake-build-debug
 
 # PyCharm
 .idea/
+
+*.pyc
