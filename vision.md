@@ -12,8 +12,10 @@ sudo apt install ros-kinetic-ar-track-alvar
 
 ### Raspberry Cam
 
-try this?
+First, enable hardware support for the camera as described here:
+https://www.raspberrypi.org/documentation/configuration/camera.md
 
+Clone and build the ROS node as described here:
 https://github.com/UbiquityRobotics/raspicam_node
 
 ---
