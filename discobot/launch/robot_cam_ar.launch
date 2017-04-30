@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+    <group ns="team_black">
+        <node name="robot_connection" type="serial_node.py" pkg="rosserial_python" output="screen" args="/dev/ttyACM0"/>
+
+        <node name="discobot" type="simple_battle_bot.py" pkg="discobot" output="screen"/>
+
+        <include file="$(find raspicam_node)/launch/camerav1_1280x720.launch"/>
+
+        <include file="$(find discobot)/launch/ar_tag_raspi.launch"/>
+    </group>
+</launch>
