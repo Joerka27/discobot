@@ -10,6 +10,8 @@
 #include <battle_arena_msgs/MoveCommand.h>
 #include <battle_arena_msgs/Tone.h>
 
+#include "LedControl.h"
+
 DRV8835MotorShield motors;
 ros::NodeHandle  nh;
 
@@ -75,6 +77,27 @@ void tone_messageCb( const battle_arena_msgs::Tone& tone_msg){
   tone(tone_pin, tone_msg.frequency, tone_msg.duration_ms);
 }
 
+/// callback for making the robot blink
+void blink_messageCb( const std_msgs::Int_32& blink_msg){
+  //LED control
+	if (blink_msg.data == 1) 
+	{
+		// Put #1 frame
+		sinvader1a();
+		delay(delayTime);
+		sinvader1b();
+		delay(delayTime);
+	}
+	if (blink_msg.data == 2) 
+	{
+		// Put #2 frame
+		sinvader2a();
+		delay(delayTime);
+		sinvader2b();
+		delay(delayTime);	
+	}
+}
+
 /// simpler way to stop robot
 void stop_messageCb( const std_msgs::Empty& msg){
   motors.setSpeeds(0, 0);
@@ -84,6 +107,62 @@ ros::Subscriber<battle_arena_msgs::MoveCommand> sub_cmd("cmd", commandCb );
 ros::Subscriber<battle_arena_msgs::MoveCommand> sub_cmd_master("master_cmd", masterCommandCb );
 ros::Subscriber<std_msgs::Empty> sub_stop("stop", stop_messageCb );
 ros::Subscriber<battle_arena_msgs::Tone> sub_tone("tone", tone_messageCb );
+
+ros::Subscriber<std_msgs::Int32> sub_blink("blink", blink_messageCb );
+
+//LedControl Init
+LedControl lc=LedControl(13,12,11,1);  // Pins: DIN,CLK,CS, # of Display connected
+
+unsigned long delayTime=200;  // Delay between Frames
+
+// Put values in arrays
+byte invader1a[] =
+{
+   B00011000,  // First frame of invader #1
+   B00111100,
+   B01111110,
+   B11011011,
+   B11111111,
+   B00100100,
+   B01011010,
+   B10100101
+};
+
+byte invader1b[] =
+{
+  B00011000, // Second frame of invader #1
+  B00111100,
+  B01111110,
+  B11011011,
+  B11111111,
+  B00100100,
+  B01011010,
+  B01000010
+};
+byte invader2a[] =
+{
+  B00100100, // First frame of invader #2
+  B00100100,
+  B01111110,
+  B11011011,
+  B11111111,
+  B11111111,
+  B10100101,
+  B00100100
+};
+
+byte invader2b[] =
+{
+  B00100100, // Second frame of invader #2
+  B10100101,
+  B11111111,
+  B11011011,
+  B11111111,
+  B01111110,
+  B00100100,
+  B01000010
+};
+
 
 
 void setup()
@@ -103,11 +182,52 @@ void setup()
   nh.subscribe(sub_cmd_master);
   nh.subscribe(sub_stop);
   nh.subscribe(sub_tone);
+  nh.subscribe(sub_blink);
 
   // motors.flipM1(true); /// use this if a motor is mounted rotated or if cables are switched
+
+  //setup LedControl
+  lc.shutdown(0,false);  // Wake up display
+  lc.setIntensity(0,5);  // Set intensity level
+  lc.clearDisplay(0);  // Clear Display
 }
 
 int loop_counter=0;
+
+// LedControl Functions
+//  Take values in Arrays and Display them
+void sinvader1a()
+{
+  for (int i = 0; i < 8; i++)  
+  {
+    lc.setRow(0,i,invader1a[i]);
+  }
+}
+
+void sinvader1b()
+{
+  for (int i = 0; i < 8; i++)
+  {
+    lc.setRow(0,i,invader1b[i]);
+  }
+}
+
+void sinvader2a()
+{
+  for (int i = 0; i < 8; i++)
+  {
+    lc.setRow(1,i,invader2a[i]);
+  }
+}
+
+void sinvader2b()
+{
+  for (int i = 0; i < 8; i++)
+  {
+    lc.setRow(1,i,invader2b[i]);
+  }
+}
+
 
 void loop()
 {
@@ -124,3 +244,5 @@ void loop()
   nh.spinOnce();
   delay(10);
 }
+
+
